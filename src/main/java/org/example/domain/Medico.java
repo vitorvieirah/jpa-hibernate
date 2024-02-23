@@ -3,14 +3,16 @@ package org.example.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.example.main.dados.DadosMedico;
 
 @AllArgsConstructor
 @Builder
 @Getter
+@ToString
 public class Medico {
 
-    private Long id;
+    private String crm;
     private String nome;
     private String especialidade;
 

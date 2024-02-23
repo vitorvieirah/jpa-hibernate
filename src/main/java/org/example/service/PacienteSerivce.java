@@ -7,6 +7,7 @@ import org.example.exception.PacienteDataBaseException;
 import org.example.main.dados.DadosPaciente;
 import org.example.mapper.PacienteMapper;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
@@ -36,8 +37,21 @@ public class PacienteSerivce {
         else
             throw new RuntimeException("Paciente não encontrado");
     }
+    
+    public List<Paciente> buscarTodosPacientes () throws PacienteDataBaseException {
+        return dao.buscarTodosPacientes();
+    }
 
     public void deletar(String cpf) throws PacienteDataBaseException {
         dao.deletar(cpf);
+    }
+
+    public Paciente buscarPorCpf(String cpf) throws PacienteDataBaseException {
+        Optional<Paciente> paciente = dao.buscarPorCpf(cpf);
+
+        if(paciente.isEmpty())
+            throw new RuntimeException("Paciente não encontrado");
+        else
+            return paciente.get();
     }
 }

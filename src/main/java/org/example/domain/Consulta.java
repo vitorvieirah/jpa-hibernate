@@ -3,6 +3,7 @@ package org.example.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @Getter
+@ToString
 public class Consulta {
 
     private Long id;

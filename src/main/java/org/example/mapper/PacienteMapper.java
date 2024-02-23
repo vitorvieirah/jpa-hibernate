@@ -4,6 +4,8 @@ import org.example.domain.Paciente;
 import org.example.entity.PacienteEntity;
 import org.example.main.dados.DadosPaciente;
 
+import java.util.List;
+
 public class PacienteMapper implements ManegerMapper<Paciente, PacienteEntity, DadosPaciente>{
     @Override
     public PacienteEntity paraEntity(Paciente domain) {
@@ -33,5 +35,9 @@ public class PacienteMapper implements ManegerMapper<Paciente, PacienteEntity, D
                 .email(dadosPaciente.email())
                 .idade(dadosPaciente.idade())
                 .build();
+    }
+
+    public List<Paciente> paraDomainsDeEntitys(List<PacienteEntity> resultList) {
+        return resultList.stream().map(this::paraDomain).toList();
     }
 }

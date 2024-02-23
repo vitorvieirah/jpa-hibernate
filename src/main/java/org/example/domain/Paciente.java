@@ -1,15 +1,13 @@
 package org.example.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.example.main.dados.DadosPaciente;
 
 
 @AllArgsConstructor
 @Builder
 @Getter
+@ToString
 public class Paciente {
 
     private String cpf;

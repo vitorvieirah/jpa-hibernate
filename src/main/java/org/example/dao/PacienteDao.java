@@ -7,6 +7,7 @@ import org.example.exception.PacienteDataBaseException;
 import org.example.mapper.PacienteMapper;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -39,6 +40,16 @@ public class PacienteDao {
         try {
             Optional<Paciente> paciente = buscarPorCpf(cpf);
             paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
+        }catch (Exception ex){
+            throw new PacienteDataBaseException(ex.getMessage());
+        }
+    }
+
+    public List<Paciente> buscarTodosPacientes() throws PacienteDataBaseException {
+        String jpql = "SELECT p FROM PacienteEntity p";
+
+        try {
+            return mapper.paraDomainsDeEntitys(em.createQuery(jpql, PacienteEntity.class).getResultList());
         }catch (Exception ex){
             throw new PacienteDataBaseException(ex.getMessage());
         }

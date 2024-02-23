@@ -13,7 +13,7 @@ public class MedicoMapper implements ManegerMapper<Medico, MedicoEntity, DadosMe
     @Override
     public MedicoEntity paraEntity(Medico domain) {
         return MedicoEntity.builder()
-                .id(domain.getId())
+                .crm(domain.getCrm())
                 .nome(domain.getNome())
                 .especialidade(domain.getEspecialidade())
                 .build();
@@ -22,7 +22,7 @@ public class MedicoMapper implements ManegerMapper<Medico, MedicoEntity, DadosMe
     @Override
     public Medico paraDomain(MedicoEntity entity) {
         return Medico.builder()
-                .id(entity.getId())
+                .crm(entity.getCrm())
                 .especialidade(entity.getEspecialidade())
                 .nome(entity.getNome())
                 .build();
@@ -31,7 +31,7 @@ public class MedicoMapper implements ManegerMapper<Medico, MedicoEntity, DadosMe
     @Override
     public Medico paraDomainDeDados(DadosMedico medico) {
         return Medico.builder()
-                .id(medico.id())
+                .crm(medico.crm())
                 .especialidade(medico.especialidade())
                 .nome(medico.nome())
                 .build();

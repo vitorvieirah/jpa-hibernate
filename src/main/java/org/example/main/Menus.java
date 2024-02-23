@@ -2,7 +2,7 @@ package org.example.main;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.example.exception.ConsultaDataBaseExceptions;
+import org.example.exception.ConsultaDataBaseException;
 import org.example.exception.MedicoDataBaseException;
 import org.example.exception.PacienteDataBaseException;
 import org.example.main.dados.DadosMedico;
@@ -34,9 +34,10 @@ public class Menus {
     public int menuPaciente(){
         System.out.println("""
                 1 - CADASTRAR PACIENTE
-                2 - CONSULTAR PACIENTE
-                3 - ALTERAR DADOS DO PACIENTE
-                4 - DELETAR PACIENTE
+                2 - CONSULTAR TODOS PACIENTES
+                3 - CONSULTAR PACIENTE PELO CPF
+                4 - ALTERAR DADOS DO PACIENTE
+                5 - DELETAR PACIENTE
                 """);
         return sc.nextInt();
     }
@@ -61,7 +62,16 @@ public class Menus {
          mensagemSucesso();
     }
 
-    public void menuAltaraDadosPaciente() throws PacienteDataBaseException {
+    public void menuConsultaTodosOsPacientes () throws PacienteDataBaseException {
+        servicePaciente.buscarTodosPacientes().forEach(System.out::println);
+    }
+
+    public void menuConsultaPacientePorCpf () throws PacienteDataBaseException {
+        System.out.println("Digiete o cpf do paciente: ");
+        System.out.println("Paciente encotrado: " + servicePaciente.buscarPorCpf(sc.next()));
+    }
+
+    public void menuAlteraDadosPaciente() throws PacienteDataBaseException {
         System.out.println("""
                 1 - ALTERAR APENAS CPF PACIENTE
                 2 - ALTERAR APENAS O NOME DO PACIENTE
@@ -108,18 +118,19 @@ public class Menus {
         }
     }
 
-    public void menuDeltarPaciente() throws PacienteDataBaseException {
+    public void menuDeletarPaciente() throws PacienteDataBaseException {
         System.out.println("Digite o cpf do paciente que deseja deletar: ");
         servicePaciente.deletar(sc.next());
         mensagemSucesso();
     }
 
-    public static int menuMedicos(){
+    public int menuMedicos(){
         System.out.println("""
                 1 - CADASTRAR MÉDICO
-                2 - CONSULTAR MÉDICO
-                3 - ALTERAR DADOS DO MÉDICO
-                4 - DELETAR MÉDICO
+                2 - CONSULTAR TODOS OS MÉDICOS
+                3 - CONSULTAR MÉDICO POR CRM
+                4 - ALTERAR DADOS DO MÉDICO
+                5 - DELETAR MÉDICO
                 """);
         return sc.nextInt();
     }
@@ -135,9 +146,13 @@ public class Menus {
         mensagemSucesso();
     }
 
-    public void menuConsultarMedico () throws MedicoDataBaseException {
-        System.out.println("Digite o id do médico: ");
-        serviceMedico.consultar().forEach(System.out::println);
+    public void menuConsultarTodosOsMedicos () throws MedicoDataBaseException {
+        serviceMedico.consultarTodos().forEach(System.out::println);
+    }
+
+    public void menuConsultarMedicoPorCrm (String crm) throws MedicoDataBaseException {
+        System.out.println("Digite o crm do médico: ");
+        System.out.println("Médico encontrado: " + serviceMedico.consultarPorCrm(crm));
     }
 
     public void menuAlterarDadosMedico () throws MedicoDataBaseException {
@@ -179,28 +194,34 @@ public class Menus {
     public int menConsultas(){
         System.out.println("""
                 1 - MARCAR CONSULTA
-                2 - CANCELAR CONSULTA
-                3 - REMARCAR CONSULTA
+                2 - ACESSAR CONSULTA
+                3 - CANCELAR CONSULTA
+                4 - REMARCAR CONSULTA
                 """);
         return sc.nextInt();
     }
 
-    public void menuCadastroConsulta () throws PacienteDataBaseException, MedicoDataBaseException, ConsultaDataBaseExceptions {
+    public void menuCadastroConsulta () throws PacienteDataBaseException, MedicoDataBaseException, ConsultaDataBaseException {
         System.out.println("Digite o id do médico: ");
-        Long id = sc.nextLong();
+        String crm = sc.next();
         System.out.println("Digite o cpf do paciente: ");
         String cpf = sc.next();
 
-        System.out.println(serviceConsulta.marcar(id, cpf));
+        System.out.println(serviceConsulta.marcar(crm, cpf));
     }
 
-    public void menuCancelarConsulta() throws MedicoDataBaseException {
+    public void menuAcessarConsultaPorId (Long id) throws ConsultaDataBaseException {
+        System.out.println("Digite o id da consulta: ");
+        System.out.println("Consulta encontrada: " + serviceConsulta.buscarConsultaPorId(id));
+    }
+
+    public void menuCancelarConsulta() throws ConsultaDataBaseException {
         System.out.println("Digite o id da consulta que deseja cancelar: ");
         serviceConsulta.cancelar(sc.nextLong());
         mensagemSucesso();
     }
 
-    public void menuRemarcarConsulta () throws MedicoDataBaseException, ConsultaDataBaseExceptions {
+    public void menuRemarcarConsulta () throws MedicoDataBaseException, ConsultaDataBaseException {
         System.out.println("Digite o id da consulta: ");
         Long id = sc.nextLong();
         System.out.println("Digite o nova data da consulta: ");

@@ -7,11 +7,9 @@ import org.example.dao.PacienteDao;
 import org.example.domain.Consulta;
 import org.example.domain.Medico;
 import org.example.domain.Paciente;
-import org.example.entity.ConsultaEntity;
-import org.example.exception.ConsultaDataBaseExceptions;
+import org.example.exception.ConsultaDataBaseException;
 import org.example.exception.MedicoDataBaseException;
 import org.example.exception.PacienteDataBaseException;
-import org.example.mapper.ConsultaMapper;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -27,13 +25,13 @@ public class ConsultaSerivce {
     private final MedicoDao medicoDao;
     private final ConsultaDao consultaDao;
 
-    public String marcar(Long idMedico, String cpfPaciente) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseExceptions {
-       List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(idMedico);
+    public String marcar(String crm, String cpfPaciente) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseException {
+       List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(crm);
 
 
         LocalDate dataConsulta = buscarDataMaisRecente(consultas);
 
-        Optional<Medico> medico = medicoDao.consultarPorId(idMedico);
+        Optional<Medico> medico = medicoDao.consultarPorCrm(crm);
         Optional<Paciente> paciente = pacienteDao.buscarPorCpf(cpfPaciente);
 
         validaOptional(Optional.ofNullable(paciente), 1);
@@ -53,7 +51,16 @@ public class ConsultaSerivce {
                 " na data " + formataData(dataConsulta);
     }
 
-    public void cancelar(Long idConsulta) throws MedicoDataBaseException {
+    public Consulta buscarConsultaPorId(Long id) throws ConsultaDataBaseException {
+        Optional<Consulta> consulta = consultaDao.buscarPorId(id);
+
+        if(consulta.isEmpty())
+            throw new RuntimeException("Consulta não encotrada");
+        else
+            return consulta.get();
+    }
+
+    public void cancelar(Long idConsulta) throws ConsultaDataBaseException {
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
         if(consultaOptional.isPresent())
             consultaDao.deletar(consultaOptional.get());
@@ -61,7 +68,7 @@ public class ConsultaSerivce {
             throw new RuntimeException("Consulta não encontrada");
     }
 
-    public String remarcar(Long idConsulta, LocalDate novaData) throws MedicoDataBaseException, ConsultaDataBaseExceptions {
+    public String remarcar(Long idConsulta, LocalDate novaData) throws ConsultaDataBaseException {
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
         Consulta consulta;
 
@@ -70,7 +77,7 @@ public class ConsultaSerivce {
         else
             throw new RuntimeException("Consulta não encontrada");
 
-        List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getId());
+        List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getCrm());
         LocalDate dataDisponivel = buscarDataMaisRecente(consultas);
 
         if((dataDisponivel == novaData || novaData.isBefore(dataDisponivel)) && validaData(novaData)){

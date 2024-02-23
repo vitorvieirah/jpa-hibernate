@@ -18,7 +18,7 @@ public class MedicoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String crm;
     private String nome;
     private String especialidade;
     @ManyToMany

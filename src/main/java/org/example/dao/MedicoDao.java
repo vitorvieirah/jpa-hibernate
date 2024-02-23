@@ -16,10 +16,10 @@ public class MedicoDao {
     private final EntityManager em;
     private final MedicoMapper mapper;
 
-    public Optional<Medico> consultarPorId(Long id) throws MedicoDataBaseException {
+    public Optional<Medico> consultarPorCrm(String crm) throws MedicoDataBaseException {
         Optional<MedicoEntity> oMedico;
         try {
-            oMedico = Optional.of(em.find(MedicoEntity.class, id));
+            oMedico = Optional.of(em.find(MedicoEntity.class, crm));
         }catch (Exception ex){
             throw new MedicoDataBaseException(ex.getMessage());
         }

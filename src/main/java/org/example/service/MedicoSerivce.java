@@ -19,7 +19,7 @@ public class MedicoSerivce {
 
 
     public void cadastrar(DadosMedico medico) throws MedicoDataBaseException {
-        Optional<Medico> oMedico = dao.consultarPorId(medico.id());
+        Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm());
 
         oMedico.ifPresent(p -> {
             throw new RuntimeException("Medico já existe");
@@ -28,13 +28,22 @@ public class MedicoSerivce {
         dao.salvar(mapper.paraDomainDeDados(medico));
     }
 
-    public List<Medico> consultar() throws MedicoDataBaseException {
+    public List<Medico> consultarTodos() throws MedicoDataBaseException {
         return dao.consultarTodos();
+    }
+
+    public Medico consultarPorCrm(String crm) throws MedicoDataBaseException {
+        Optional<Medico> medico = dao.consultarPorCrm(crm);
+
+        if(medico.isEmpty())
+            throw new RuntimeException("Medico não encontrado");
+        else
+            return medico.get();
     }
 
     public void alterar(DadosMedico medico) throws MedicoDataBaseException {
 
-        Optional<Medico> oMedico = dao.consultarPorId(medico.id());
+        Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm());
 
         if (oMedico.isPresent()){
             oMedico.get().alterarDados(medico);
