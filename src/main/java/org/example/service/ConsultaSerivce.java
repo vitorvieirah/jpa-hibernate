@@ -1,0 +1,122 @@
+package org.example.service;
+
+import lombok.AllArgsConstructor;
+import org.example.dao.ConsultaDao;
+import org.example.dao.MedicoDao;
+import org.example.dao.PacienteDao;
+import org.example.domain.Consulta;
+import org.example.domain.Medico;
+import org.example.domain.Paciente;
+import org.example.entity.ConsultaEntity;
+import org.example.exception.ConsultaDataBaseExceptions;
+import org.example.exception.MedicoDataBaseException;
+import org.example.exception.PacienteDataBaseException;
+import org.example.mapper.ConsultaMapper;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+
+@AllArgsConstructor
+public class ConsultaSerivce {
+
+    private final PacienteDao pacienteDao;
+    private final MedicoDao medicoDao;
+    private final ConsultaDao consultaDao;
+
+    public String marcar(Long idMedico, String cpfPaciente) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseExceptions {
+       List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(idMedico);
+
+
+        LocalDate dataConsulta = buscarDataMaisRecente(consultas);
+
+        Optional<Medico> medico = medicoDao.consultarPorId(idMedico);
+        Optional<Paciente> paciente = pacienteDao.buscarPorCpf(cpfPaciente);
+
+        validaOptional(Optional.ofNullable(paciente), 1);
+        validaOptional(Optional.ofNullable(medico), 2);
+
+        if(validaData(dataConsulta)){
+            consultaDao.salvar(Consulta.builder()
+                    .paciente(paciente.get())
+                    .medico(medico.get())
+                    .data(dataConsulta)
+                    .build());
+        }else
+            throw new RuntimeException("Data indisponível");
+
+
+        return "Consulta do " + paciente.get().getNome() + " marcada com o médico " + medico.get().getNome() +
+                " na data " + formataData(dataConsulta);
+    }
+
+    public void cancelar(Long idConsulta) throws MedicoDataBaseException {
+        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
+        if(consultaOptional.isPresent())
+            consultaDao.deletar(consultaOptional.get());
+        else
+            throw new RuntimeException("Consulta não encontrada");
+    }
+
+    public String remarcar(Long idConsulta, LocalDate novaData) throws MedicoDataBaseException, ConsultaDataBaseExceptions {
+        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
+        Consulta consulta;
+
+        if(consultaOptional.isPresent())
+            consulta = consultaOptional.get();
+        else
+            throw new RuntimeException("Consulta não encontrada");
+
+        List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getId());
+        LocalDate dataDisponivel = buscarDataMaisRecente(consultas);
+
+        if((dataDisponivel == novaData || novaData.isBefore(dataDisponivel)) && validaData(novaData)){
+            consulta.remarcar(novaData);
+            consultaDao.salvar(consulta);
+            return "Consulta do paciente : "
+                    + consulta.getPaciente().getNome()
+                    + " com o médico : "
+                    + consulta.getMedico().getNome()
+                    + " foi remarcada para a data: "
+                    + formataData(novaData);
+        }else {
+            throw new RuntimeException("Data indisponível");
+        }
+    }
+
+    private static String formataData(LocalDate data) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("pt", "BR"));
+        return data.format(formatter);
+    }
+
+    private static LocalDate buscarDataMaisRecente (List<Consulta> consultas){
+        LocalDate dataReferecia = consultas.get(0).getData();
+
+        for (Consulta c : consultas) {
+            if(c.getData().isAfter(dataReferecia)){
+                dataReferecia = c.getData();
+            }
+        }
+
+        return dataReferecia.plusDays(1);
+    }
+
+    private static boolean validaData (LocalDate data){
+        DayOfWeek dataEmDias = data.getDayOfWeek();
+
+        return dataEmDias != DayOfWeek.SATURDAY && dataEmDias != DayOfWeek.SUNDAY;
+    }
+
+    private static void validaOptional (Optional<Object> optional, int op){
+        if(optional.isEmpty()){
+            if(op == 1)
+                throw new RuntimeException("Paciente não encontrado");
+            else
+                throw new RuntimeException("Medico não encotrado");
+        }
+
+    }
+}
