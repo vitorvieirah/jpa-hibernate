@@ -150,9 +150,9 @@ public class Menus {
         serviceMedico.consultarTodos().forEach(System.out::println);
     }
 
-    public void menuConsultarMedicoPorCrm (String crm) throws MedicoDataBaseException {
+    public void menuConsultarMedicoPorCrm () throws MedicoDataBaseException {
         System.out.println("Digite o crm do médico: ");
-        System.out.println("Médico encontrado: " + serviceMedico.consultarPorCrm(crm));
+        System.out.println("Médico encontrado: " + serviceMedico.consultarPorCrm(sc.next()));
     }
 
     public void menuAlterarDadosMedico () throws MedicoDataBaseException {
@@ -191,12 +191,13 @@ public class Menus {
         mensagemSucesso();
     }
 
-    public int menConsultas(){
+    public int menuConsultas(){
         System.out.println("""
                 1 - MARCAR CONSULTA
                 2 - ACESSAR CONSULTA
-                3 - CANCELAR CONSULTA
-                4 - REMARCAR CONSULTA
+                3 - ACESSAR TODAS AS CONSULTAS
+                4 - CANCELAR CONSULTA
+                5 - REMARCAR CONSULTA
                 """);
         return sc.nextInt();
     }
@@ -210,9 +211,13 @@ public class Menus {
         System.out.println(serviceConsulta.marcar(crm, cpf));
     }
 
-    public void menuAcessarConsultaPorId (Long id) throws ConsultaDataBaseException {
+    public void menuAcessarConsultaPorId () throws ConsultaDataBaseException {
         System.out.println("Digite o id da consulta: ");
-        System.out.println("Consulta encontrada: " + serviceConsulta.buscarConsultaPorId(id));
+        System.out.println("Consulta encontrada: " + serviceConsulta.buscarConsultaPorId(sc.nextLong()));
+    }
+
+    public void menuAcessarTodasAsConsultas () throws ConsultaDataBaseException {
+        serviceConsulta.buscarTodasConsultas().forEach(System.out::println);
     }
 
     public void menuCancelarConsulta() throws ConsultaDataBaseException {

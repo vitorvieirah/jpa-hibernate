@@ -20,12 +20,15 @@ public class ConsultaDao {
 
     public List<Consulta> buscarConsultasPorMedico(String crm) throws ConsultaDataBaseException {
         String jpql = "SELECT c FROM ConsultaEntity c WHERE c.medico.crm = :crm";
-        List<ConsultaEntity> consultas = new ArrayList<>();
+        List<ConsultaEntity> consultas;
 
         try {
+            em.getTransaction().begin();
             consultas = em.createQuery(jpql, ConsultaEntity.class)
                     .setParameter("crm", crm)
                     .getResultList();
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new ConsultaDataBaseException(ex.getMessage());
         }
@@ -56,5 +59,15 @@ public class ConsultaDao {
             throw new ConsultaDataBaseException(ex.getMessage());
         }
         return consultaOptional.map(mapper::paraDomain);
+    }
+
+    public List<Consulta> buscarPorConsultas() throws ConsultaDataBaseException {
+        String jpql = "SELECT c FROM ConsultaEntity c";
+
+        try{
+            return mapper.paraDomainsDeEntitys(em.createQuery(jpql, ConsultaEntity.class).getResultList());
+        }catch (Exception ex){
+            throw new ConsultaDataBaseException(ex.getMessage());
+        }
     }
 }

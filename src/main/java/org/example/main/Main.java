@@ -50,11 +50,22 @@ public class Main {
             case 2: {
                 switch (menus.menuMedicos()){
                     case 1: menus.menuCadastroMedicos();
-                    case 2: menus.menuConsultarMedico();
+                    case 2: menus.menuConsultarTodosOsMedicos();
+                    case 3: menus.menuConsultarMedicoPorCrm();
+                    case 4: menus.menuAlterarDadosMedico();
+                    case 5: menus.menuDeletarMedicos();
                 }
             }
+            default:{
+                switch (menus.menuConsultas()){
+                    case 1: menus.menuCadastroConsulta();
+                    case 2: menus.menuAcessarConsultaPorId();
+                    case 3: menus.menuAcessarTodasAsConsultas();
+                    case 4: menus.menuCancelarConsulta();
+                    case 5: menus.menuRemarcarConsulta();
+                }
 
-
+            }
         }
     }
 

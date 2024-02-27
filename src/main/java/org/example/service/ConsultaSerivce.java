@@ -94,6 +94,10 @@ public class ConsultaSerivce {
         }
     }
 
+    public List<Consulta> buscarTodasConsultas () throws ConsultaDataBaseException {
+        return consultaDao.buscarPorConsultas();
+    }
+
     private static String formataData(LocalDate data) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", new Locale("pt", "BR"));
         return data.format(formatter);
