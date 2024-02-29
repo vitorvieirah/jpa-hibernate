@@ -1,6 +1,5 @@
 package org.example.main;
 
-
 import org.example.dao.ConsultaDao;
 import org.example.dao.MedicoDao;
 import org.example.dao.PacienteDao;
@@ -37,34 +36,52 @@ public class Main {
 
         Menus menus = new Menus(pacienteSerivce, medicoSerivce, consultaSerivce);
 
-        switch (menus.menuPrincipal()){
-            case 1 :{
-                switch (menus.menuPaciente()){
-                    case 1: menus.menuCadastroPaciente();
-                    case 2: menus.menuConsultaTodosOsPacientes();
-                    case 3: menus.menuConsultaPacientePorCpf();
-                    case 4: menus.menuAlteraDadosPaciente();
-                    case 5: menus.menuDeletarPaciente();
+        int op = 0;
+        while (op < 4) {
+             op = menus.menuPrincipal();
+            switch (op) {
+                case 1: {
+                    switch (menus.menuPaciente()) {
+                        case 1:
+                            menus.menuCadastroPaciente();
+                        case 2:
+                            menus.menuConsultaTodosOsPacientes();
+                        case 3:
+                            menus.menuConsultaPacientePorCpf();
+                        case 4:
+                            menus.menuAlteraDadosPaciente();
+                        case 5:
+                            menus.menuDeletarPaciente();
+                    }
                 }
-            }
-            case 2: {
-                switch (menus.menuMedicos()){
-                    case 1: menus.menuCadastroMedicos();
-                    case 2: menus.menuConsultarTodosOsMedicos();
-                    case 3: menus.menuConsultarMedicoPorCrm();
-                    case 4: menus.menuAlterarDadosMedico();
-                    case 5: menus.menuDeletarMedicos();
+                case 2: {
+                    switch (menus.menuMedicos()) {
+                        case 1:
+                            menus.menuCadastroMedicos();
+                        case 2:
+                            menus.menuConsultarTodosOsMedicos();
+                        case 3:
+                            menus.menuConsultarMedicoPorCrm();
+                        case 4:
+                            menus.menuAlterarDadosMedico();
+                        case 5:
+                            menus.menuDeletarMedicos();
+                    }
                 }
-            }
-            default:{
-                switch (menus.menuConsultas()){
-                    case 1: menus.menuCadastroConsulta();
-                    case 2: menus.menuAcessarConsultaPorId();
-                    case 3: menus.menuAcessarTodasAsConsultas();
-                    case 4: menus.menuCancelarConsulta();
-                    case 5: menus.menuRemarcarConsulta();
+                default: {
+                    switch (menus.menuConsultas()) {
+                        case 1:
+                            menus.menuCadastroConsulta();
+                        case 2:
+                            menus.menuAcessarConsultaPorId();
+                        case 3:
+                            menus.menuAcessarTodasAsConsultas();
+                        case 4:
+                            menus.menuCancelarConsulta();
+                        case 5:
+                            menus.menuRemarcarConsulta();
+                    }
                 }
-
             }
         }
     }

@@ -19,7 +19,9 @@ public class MedicoDao {
     public Optional<Medico> consultarPorCrm(String crm) throws MedicoDataBaseException {
         Optional<MedicoEntity> oMedico;
         try {
+            em.getTransaction().begin();
             oMedico = Optional.of(em.find(MedicoEntity.class, crm));
+            em.close();
         }catch (Exception ex){
             throw new MedicoDataBaseException(ex.getMessage());
         }
@@ -32,7 +34,9 @@ public class MedicoDao {
         List<MedicoEntity> resultMedicos;
 
         try {
+            em.getTransaction().begin();
             resultMedicos = em.createQuery(jpql, MedicoEntity.class).getResultList();
+            em.close();
         }catch (Exception ex){
             throw new MedicoDataBaseException(ex.getMessage());
         }
@@ -42,15 +46,21 @@ public class MedicoDao {
 
     public void salvar(Medico medico) throws MedicoDataBaseException {
         try {
+            em.getTransaction().begin();
             em.persist(mapper.paraEntity(medico));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new MedicoDataBaseException(ex.getMessage());
         }
     }
 
-    public void deletar(Long id) throws MedicoDataBaseException {
+    public void deletar(String crm) throws MedicoDataBaseException {
         try{
-            em.remove(consultarPorId(id));
+            em.getTransaction().begin();
+            em.remove(consultarPorCrm(crm));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new MedicoDataBaseException(ex.getMessage());
         }

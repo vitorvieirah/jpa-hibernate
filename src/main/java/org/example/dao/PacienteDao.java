@@ -20,7 +20,9 @@ public class PacienteDao {
         Optional<PacienteEntity> oPaciente;
 
         try{
+            em.getTransaction().begin();
             oPaciente =  Optional.of(em.find(PacienteEntity.class, cpf));
+            em.close();
         }catch (Exception ex){
             throw new PacienteDataBaseException(ex.getMessage());
         }
@@ -30,16 +32,22 @@ public class PacienteDao {
 
     public void salvar(Paciente paciente) throws PacienteDataBaseException {
         try{
+            em.getTransaction().begin();
             em.persist(mapper.paraEntity(paciente));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new PacienteDataBaseException(ex.getMessage());
         }
     }
 
     public void deletar(String cpf) throws PacienteDataBaseException {
+        Optional<Paciente> paciente = buscarPorCpf(cpf);
         try {
-            Optional<Paciente> paciente = buscarPorCpf(cpf);
+            em.getTransaction().begin();
             paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new PacienteDataBaseException(ex.getMessage());
         }
@@ -47,11 +55,16 @@ public class PacienteDao {
 
     public List<Paciente> buscarTodosPacientes() throws PacienteDataBaseException {
         String jpql = "SELECT p FROM PacienteEntity p";
+        List<Paciente> pacientes;
 
         try {
-            return mapper.paraDomainsDeEntitys(em.createQuery(jpql, PacienteEntity.class).getResultList());
+            em.getTransaction().begin();
+            pacientes = mapper.paraDomainsDeEntitys(em.createQuery(jpql, PacienteEntity.class).getResultList());
+            em.close();
         }catch (Exception ex){
             throw new PacienteDataBaseException(ex.getMessage());
         }
+
+        return pacientes;
     }
 }

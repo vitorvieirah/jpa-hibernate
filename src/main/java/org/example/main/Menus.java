@@ -27,6 +27,7 @@ public class Menus {
                 1 - MENU PACIENTES
                 2 - MENU MEDICOS
                 3 - MENU CONSULTAS
+                4 - SAIR
                 """);
         return sc.nextInt();
     }
@@ -46,7 +47,8 @@ public class Menus {
         System.out.println("Digite o cpf do paciente: ");
         String cpf = sc.next();
         System.out.println("Digite o nome do paciente: ");
-        String nome = sc.next();
+        sc.nextLine();
+        String nome = sc.nextLine();
         System.out.println("Digite a idade do paciente: ");
         Integer idade = sc.nextInt();
         System.out.println("Digite o email do paciente: ");
@@ -186,8 +188,8 @@ public class Menus {
     }
 
     public void menuDeletarMedicos () throws MedicoDataBaseException {
-        System.out.println("Digite o id do médico que deseja deletar: ");
-        serviceMedico.deletar(sc.nextLong());
+        System.out.println("Digite o crm do médico que deseja deletar: ");
+        serviceMedico.deletar(sc.next());
         mensagemSucesso();
     }
 

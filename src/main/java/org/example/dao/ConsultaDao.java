@@ -37,7 +37,10 @@ public class ConsultaDao {
 
     public void salvar(Consulta consulta) throws ConsultaDataBaseException {
         try {
+            em.getTransaction().begin();
             em.persist(mapper.paraEntity(consulta));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new ConsultaDataBaseException(ex.getMessage());
         }
@@ -45,7 +48,10 @@ public class ConsultaDao {
 
     public void deletar (Consulta consulta) throws ConsultaDataBaseException {
         try{
+            em.getTransaction().begin();
             em.remove(mapper.paraEntity(consulta));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new ConsultaDataBaseException(ex.getMessage());
         }
@@ -54,7 +60,10 @@ public class ConsultaDao {
     public Optional<Consulta> buscarPorId(Long idConsulta) throws ConsultaDataBaseException {
         Optional<ConsultaEntity> consultaOptional;
         try {
+            em.getTransaction().commit();
             consultaOptional = Optional.of(em.find(ConsultaEntity.class, idConsulta));
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new ConsultaDataBaseException(ex.getMessage());
         }
@@ -63,11 +72,17 @@ public class ConsultaDao {
 
     public List<Consulta> buscarPorConsultas() throws ConsultaDataBaseException {
         String jpql = "SELECT c FROM ConsultaEntity c";
+        List<Consulta> consultas;
 
         try{
-            return mapper.paraDomainsDeEntitys(em.createQuery(jpql, ConsultaEntity.class).getResultList());
+            em.getTransaction().begin();
+            consultas = mapper.paraDomainsDeEntitys(em.createQuery(jpql, ConsultaEntity.class).getResultList());
+            em.getTransaction().commit();
+            em.close();
         }catch (Exception ex){
             throw new ConsultaDataBaseException(ex.getMessage());
         }
+
+        return consultas;
     }
 }

@@ -52,7 +52,7 @@ public class MedicoSerivce {
             throw new RuntimeException("Medico nao encontrado");
     }
 
-    public void deletar(Long id) throws MedicoDataBaseException {
-        dao.deletar(id);
+    public void deletar(String crm) throws MedicoDataBaseException {
+        dao.deletar(crm);
     }
 }
