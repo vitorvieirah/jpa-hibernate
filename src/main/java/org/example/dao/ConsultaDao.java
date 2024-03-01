@@ -1,17 +1,17 @@
 package org.example.dao;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.domain.Consulta;
 import org.example.entity.ConsultaEntity;
 import org.example.exception.ConsultaDataBaseException;
-import org.example.exception.MedicoDataBaseException;
 import org.example.mapper.ConsultaMapper;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 public class ConsultaDao {
     
@@ -19,7 +19,7 @@ public class ConsultaDao {
     private final ConsultaMapper mapper;
 
     public List<Consulta> buscarConsultasPorMedico(String crm) throws ConsultaDataBaseException {
-        String jpql = "SELECT c FROM ConsultaEntity c WHERE c.medico.crm = :crm";
+        String jpql = "SELECT c FROM Consulta c WHERE c.medico.crm = :crm";
         List<ConsultaEntity> consultas;
 
         try {
@@ -30,6 +30,7 @@ public class ConsultaDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao buscar consultas por médico", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
         }
         return mapper.paraDomainsDeEntitys(consultas);
@@ -42,6 +43,7 @@ public class ConsultaDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao salvar consulta", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
         }
     }
@@ -53,6 +55,7 @@ public class ConsultaDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao deletar consulta", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
         }
     }
@@ -65,13 +68,14 @@ public class ConsultaDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao buscar consulta por Id", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
         }
         return consultaOptional.map(mapper::paraDomain);
     }
 
     public List<Consulta> buscarPorConsultas() throws ConsultaDataBaseException {
-        String jpql = "SELECT c FROM ConsultaEntity c";
+        String jpql = "SELECT c FROM Consulta c";
         List<Consulta> consultas;
 
         try{
@@ -80,6 +84,7 @@ public class ConsultaDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao buscar por consultas", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
         }
 

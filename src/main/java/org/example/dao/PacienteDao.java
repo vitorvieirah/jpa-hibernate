@@ -1,67 +1,70 @@
 package org.example.dao;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.domain.Paciente;
 import org.example.entity.PacienteEntity;
 import org.example.exception.PacienteDataBaseException;
 import org.example.mapper.PacienteMapper;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @AllArgsConstructor
 public class PacienteDao {
 
-    private final EntityManager em;
     private final PacienteMapper mapper;
 
-    public Optional<Paciente> buscarPorCpf(String cpf) throws PacienteDataBaseException {
-        Optional<PacienteEntity> oPaciente;
+    public Optional<Paciente> buscarPorCpf(String cpf, EntityManager em) throws PacienteDataBaseException {
+        String jpql = "SELECT p FROM Paciente p WHERE p.cpf = :cpf";
 
-        try{
-            em.getTransaction().begin();
-            oPaciente =  Optional.of(em.find(PacienteEntity.class, cpf));
-            em.close();
-        }catch (Exception ex){
-            throw new PacienteDataBaseException(ex.getMessage());
-        }
-
-        return oPaciente.map(mapper::paraDomain);
-    }
-
-    public void salvar(Paciente paciente) throws PacienteDataBaseException {
-        try{
-            em.getTransaction().begin();
-            em.persist(mapper.paraEntity(paciente));
-            em.getTransaction().commit();
-            em.close();
-        }catch (Exception ex){
-            throw new PacienteDataBaseException(ex.getMessage());
-        }
-    }
-
-    public void deletar(String cpf) throws PacienteDataBaseException {
-        Optional<Paciente> paciente = buscarPorCpf(cpf);
         try {
-            em.getTransaction().begin();
-            paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
-            em.getTransaction().commit();
-            em.close();
-        }catch (Exception ex){
+            PacienteEntity pacienteEntity = em.createQuery(jpql, PacienteEntity.class)
+                    .setParameter("cpf", cpf)
+                    .getSingleResult();
+
+            return Optional.ofNullable(mapper.paraDomain(pacienteEntity));
+        } catch (NoResultException ex) {
+            System.out.println("Nenhum paciente encontrado para o CPF " + cpf);
+            return Optional.empty();
+        } catch (Exception ex) {
+            System.out.println("Erro ao buscar paciente por CPF: " + ex.getMessage());
             throw new PacienteDataBaseException(ex.getMessage());
         }
     }
 
-    public List<Paciente> buscarTodosPacientes() throws PacienteDataBaseException {
-        String jpql = "SELECT p FROM PacienteEntity p";
+
+    public void salvar(Paciente paciente, EntityManager em) throws PacienteDataBaseException {
+        try{
+            em.persist(mapper.paraEntity(paciente));
+        }catch (Exception ex){
+            log.error("Erro ao salvar paciente", ex);
+            throw new PacienteDataBaseException(ex.getMessage());
+        }
+    }
+
+    public void deletar(String cpf, EntityManager em) throws PacienteDataBaseException {
+        Optional<Paciente> paciente = buscarPorCpf(cpf, em);
+        try {
+            paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
+        }catch (Exception ex){
+            log.error("Erro ao deletar paciente", ex);
+            throw new PacienteDataBaseException(ex.getMessage());
+        }
+    }
+
+    public List<Paciente> buscarTodosPacientes(EntityManager em) throws PacienteDataBaseException {
+        String jpql = "SELECT p FROM Paciente p";
         List<Paciente> pacientes;
 
         try {
-            em.getTransaction().begin();
             pacientes = mapper.paraDomainsDeEntitys(em.createQuery(jpql, PacienteEntity.class).getResultList());
-            em.close();
         }catch (Exception ex){
+            log.error("Erro ao buscar todos os pacientes", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
 

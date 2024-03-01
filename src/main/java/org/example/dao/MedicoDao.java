@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.domain.Medico;
 import org.example.entity.MedicoEntity;
 import org.example.exception.MedicoDataBaseException;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
+@Slf4j
 public class MedicoDao {
 
     private final EntityManager em;
@@ -23,6 +25,7 @@ public class MedicoDao {
             oMedico = Optional.of(em.find(MedicoEntity.class, crm));
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao consultar médico por crm", ex);
             throw new MedicoDataBaseException(ex.getMessage());
         }
 
@@ -30,7 +33,7 @@ public class MedicoDao {
     }
 
     public List<Medico> consultarTodos() throws MedicoDataBaseException {
-        String jpql = " SELECT m FROOM MedicoEntity m";
+        String jpql = " SELECT m FROOM Medico m";
         List<MedicoEntity> resultMedicos;
 
         try {
@@ -38,6 +41,7 @@ public class MedicoDao {
             resultMedicos = em.createQuery(jpql, MedicoEntity.class).getResultList();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao consultar todos os medicos", ex);
             throw new MedicoDataBaseException(ex.getMessage());
         }
 
@@ -51,6 +55,7 @@ public class MedicoDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao salvar médico", ex);
             throw new MedicoDataBaseException(ex.getMessage());
         }
     }
@@ -62,6 +67,7 @@ public class MedicoDao {
             em.getTransaction().commit();
             em.close();
         }catch (Exception ex){
+            log.error("Erro ao deletar médico", ex);
             throw new MedicoDataBaseException(ex.getMessage());
         }
     }

@@ -28,11 +28,11 @@ public class Main {
 
         ConsultaDao consultaDao = new ConsultaDao(em, consultaMapper);
         MedicoDao medicoDao = new MedicoDao(em, medicoMapper);
-        PacienteDao pacienteDao = new PacienteDao(em, pacienteMapper);
+        PacienteDao pacienteDao = new PacienteDao(pacienteMapper);
 
         ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao);
         MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper);
-        PacienteSerivce pacienteSerivce = new PacienteSerivce(pacienteDao, pacienteMapper);
+        PacienteSerivce pacienteSerivce = new PacienteSerivce(pacienteDao, pacienteMapper, em);
 
         Menus menus = new Menus(pacienteSerivce, medicoSerivce, consultaSerivce);
 
