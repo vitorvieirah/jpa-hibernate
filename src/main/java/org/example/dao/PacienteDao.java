@@ -1,19 +1,17 @@
 package org.example.dao;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.example.dao.log.ManegerLog;
 import org.example.domain.Paciente;
 import org.example.entity.PacienteEntity;
 import org.example.exception.PacienteDataBaseException;
 import org.example.mapper.PacienteMapper;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @AllArgsConstructor
 public class PacienteDao {
 
@@ -29,10 +27,10 @@ public class PacienteDao {
 
             return Optional.ofNullable(mapper.paraDomain(pacienteEntity));
         } catch (NoResultException ex) {
-            System.out.println("Nenhum paciente encontrado para o CPF " + cpf);
+            System.out.println("Nenhum paciente encontrado para o CPF: " + cpf);
             return Optional.empty();
         } catch (Exception ex) {
-            System.out.println("Erro ao buscar paciente por CPF: " + ex.getMessage());
+            ManegerLog.printLogError("Erro ao buscar paciente por CPF", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
     }
@@ -42,7 +40,7 @@ public class PacienteDao {
         try{
             em.persist(mapper.paraEntity(paciente));
         }catch (Exception ex){
-            log.error("Erro ao salvar paciente", ex);
+            ManegerLog.printLogError("Erro ao salvar paciente", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
     }
@@ -52,7 +50,7 @@ public class PacienteDao {
         try {
             paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
         }catch (Exception ex){
-            log.error("Erro ao deletar paciente", ex);
+            ManegerLog.printLogError("Erro ao deletar paciente", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
     }
@@ -64,7 +62,7 @@ public class PacienteDao {
         try {
             pacientes = mapper.paraDomainsDeEntitys(em.createQuery(jpql, PacienteEntity.class).getResultList());
         }catch (Exception ex){
-            log.error("Erro ao buscar todos os pacientes", ex);
+            ManegerLog.printLogError("Erro ao buscar todos os pacientes", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
 

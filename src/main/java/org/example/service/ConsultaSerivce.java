@@ -11,6 +11,7 @@ import org.example.exception.ConsultaDataBaseException;
 import org.example.exception.MedicoDataBaseException;
 import org.example.exception.PacienteDataBaseException;
 
+import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,15 +25,16 @@ public class ConsultaSerivce {
     private final PacienteDao pacienteDao;
     private final MedicoDao medicoDao;
     private final ConsultaDao consultaDao;
+    private final EntityManager em;
 
     public String marcar(String crm, String cpfPaciente) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseException {
-       List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(crm);
-
+        em.getTransaction().begin();
+        List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(crm, em);
 
         LocalDate dataConsulta = buscarDataMaisRecente(consultas);
 
-        Optional<Medico> medico = medicoDao.consultarPorCrm(crm);
-        Optional<Paciente> paciente = pacienteDao.buscarPorCpf(cpfPaciente);
+        Optional<Medico> medico = medicoDao.consultarPorCrm(crm,em);
+        Optional<Paciente> paciente = pacienteDao.buscarPorCpf(cpfPaciente, em);
 
         validaOptional(Optional.ofNullable(paciente), 1);
         validaOptional(Optional.ofNullable(medico), 2);
@@ -42,17 +44,21 @@ public class ConsultaSerivce {
                     .paciente(paciente.get())
                     .medico(medico.get())
                     .data(dataConsulta)
-                    .build());
+                    .build(), em);
         }else
             throw new RuntimeException("Data indisponível");
 
+        em.getTransaction().commit();
+        em.close();
 
         return "Consulta do " + paciente.get().getNome() + " marcada com o médico " + medico.get().getNome() +
                 " na data " + formataData(dataConsulta);
     }
 
     public Consulta buscarConsultaPorId(Long id) throws ConsultaDataBaseException {
-        Optional<Consulta> consulta = consultaDao.buscarPorId(id);
+        em.getTransaction().begin();
+        Optional<Consulta> consulta = consultaDao.buscarPorId(id, em);
+        em.close();
 
         if(consulta.isEmpty())
             throw new RuntimeException("Consulta não encotrada");
@@ -61,15 +67,19 @@ public class ConsultaSerivce {
     }
 
     public void cancelar(Long idConsulta) throws ConsultaDataBaseException {
-        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
+        em.getTransaction().begin();
+        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         if(consultaOptional.isPresent())
-            consultaDao.deletar(consultaOptional.get());
+            consultaDao.deletar(consultaOptional.get(), em);
         else
             throw new RuntimeException("Consulta não encontrada");
+        em.getTransaction().commit();
+        em.close();
     }
 
     public String remarcar(Long idConsulta, LocalDate novaData) throws ConsultaDataBaseException {
-        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta);
+        em.getTransaction().begin();
+        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         Consulta consulta;
 
         if(consultaOptional.isPresent())
@@ -77,25 +87,34 @@ public class ConsultaSerivce {
         else
             throw new RuntimeException("Consulta não encontrada");
 
-        List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getCrm());
+        List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getCrm(), em);
         LocalDate dataDisponivel = buscarDataMaisRecente(consultas);
 
         if((dataDisponivel == novaData || novaData.isBefore(dataDisponivel)) && validaData(novaData)){
             consulta.remarcar(novaData);
-            consultaDao.salvar(consulta);
+            consultaDao.salvar(consulta, em);
+            em.getTransaction().commit();
+            em.close();
             return "Consulta do paciente : "
                     + consulta.getPaciente().getNome()
                     + " com o médico : "
                     + consulta.getMedico().getNome()
                     + " foi remarcada para a data: "
                     + formataData(novaData);
+
         }else {
+            em.close();
             throw new RuntimeException("Data indisponível");
         }
+
+
     }
 
     public List<Consulta> buscarTodasConsultas () throws ConsultaDataBaseException {
-        return consultaDao.buscarPorConsultas();
+        em.getTransaction().begin();
+        List<Consulta> consultas = consultaDao.buscarPorConsultas(em);
+        em.close();
+        return consultas;
     }
 
     private static String formataData(LocalDate data) {

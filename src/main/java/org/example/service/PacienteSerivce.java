@@ -63,7 +63,7 @@ public class PacienteSerivce {
     }
 
     public Paciente buscarPorCpf(String cpf) throws PacienteDataBaseException {
-        Optional<Paciente> paciente = dao.buscarPorCpf(cpf);
+        Optional<Paciente> paciente = dao.buscarPorCpf(cpf, em);
 
         if(paciente.isEmpty())
             throw new RuntimeException("Paciente não encontrado");

@@ -26,19 +26,19 @@ public class Main {
         MedicoMapper medicoMapper = new MedicoMapper();
         ConsultaMapper consultaMapper = new ConsultaMapper(pacienteMapper, medicoMapper);
 
-        ConsultaDao consultaDao = new ConsultaDao(em, consultaMapper);
-        MedicoDao medicoDao = new MedicoDao(em, medicoMapper);
+        ConsultaDao consultaDao = new ConsultaDao(consultaMapper);
+        MedicoDao medicoDao = new MedicoDao(medicoMapper);
         PacienteDao pacienteDao = new PacienteDao(pacienteMapper);
 
-        ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao);
-        MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper);
+        ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao, em);
+        MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper, em);
         PacienteSerivce pacienteSerivce = new PacienteSerivce(pacienteDao, pacienteMapper, em);
 
         Menus menus = new Menus(pacienteSerivce, medicoSerivce, consultaSerivce);
 
         int op = 0;
         while (op < 4) {
-             op = menus.menuPrincipal();
+            op = menus.menuPrincipal();
             switch (op) {
                 case 1: {
                     switch (menus.menuPaciente()) {
