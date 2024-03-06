@@ -17,10 +17,9 @@ public class MedicoSerivce {
 
     private final MedicoDao dao;
     private final MedicoMapper mapper;
-    private final EntityManager em;
 
 
-    public void cadastrar(DadosMedico medico) throws MedicoDataBaseException {
+    public void cadastrar(DadosMedico medico, EntityManager em) throws MedicoDataBaseException {
         em.getTransaction().begin();
         Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm(), em);
 
@@ -30,20 +29,19 @@ public class MedicoSerivce {
 
         dao.salvar(mapper.paraDomainDeDados(medico), em);
         em.getTransaction().commit();
-        em.close();
     }
 
-    public List<Medico> consultarTodos() throws MedicoDataBaseException {
+    public List<Medico> consultarTodos(EntityManager em) throws MedicoDataBaseException {
         em.getTransaction().begin();
         List<Medico> medicos =  dao.consultarTodos(em);
-        em.close();
+        em.getTransaction().commit();
         return medicos;
     }
 
-    public Medico consultarPorCrm(String crm) throws MedicoDataBaseException {
+    public Medico consultarPorCrm(String crm, EntityManager em) throws MedicoDataBaseException {
         em.getTransaction().begin();
         Optional<Medico> medico = dao.consultarPorCrm(crm, em);
-        em.close();
+        em.getTransaction().commit();
 
         if(medico.isEmpty())
             throw new RuntimeException("Medico não encontrado");
@@ -51,7 +49,7 @@ public class MedicoSerivce {
             return medico.get();
     }
 
-    public void alterar(DadosMedico medico) throws MedicoDataBaseException {
+    public void alterar(DadosMedico medico, EntityManager em) throws MedicoDataBaseException {
 
         em.getTransaction().begin();
         Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm(), em);
@@ -63,13 +61,11 @@ public class MedicoSerivce {
             throw new RuntimeException("Medico nao encontrado");
 
         em.getTransaction().commit();
-        em.close();
     }
 
-    public void deletar(String crm) throws MedicoDataBaseException {
+    public void deletar(String crm, EntityManager em) throws MedicoDataBaseException {
         em.getTransaction().begin();
         dao.deletar(crm, em);
         em.getTransaction().commit();
-        em.close();
     }
 }

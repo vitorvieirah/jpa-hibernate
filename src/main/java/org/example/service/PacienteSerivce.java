@@ -18,9 +18,8 @@ public class PacienteSerivce {
 
     private final PacienteDao dao;
     private final PacienteMapper mapper;
-    private final EntityManager em;
 
-    public void cadastrar(DadosPaciente paciente) throws PacienteDataBaseException {
+    public void cadastrar(DadosPaciente paciente, EntityManager em) throws PacienteDataBaseException {
 
         em.getTransaction().begin();
         Optional<Paciente> oPaciente = dao.buscarPorCpf(paciente.cpf(), em);
@@ -30,10 +29,9 @@ public class PacienteSerivce {
 
         dao.salvar(mapper.paraDomainDeDados(paciente), em);
         em.getTransaction().commit();
-        em.close();
     }
 
-    public void alterar(DadosPaciente paciente) throws PacienteDataBaseException {
+    public void alterar(DadosPaciente paciente, EntityManager em) throws PacienteDataBaseException {
         em.getTransaction().begin();
         Optional<Paciente> oPaciente = dao.buscarPorCpf(paciente.cpf(), em);
 
@@ -44,26 +42,26 @@ public class PacienteSerivce {
         else
             throw new RuntimeException("Paciente não encontrado");
         em.getTransaction().commit();
-        em.close();
     }
     
-    public List<Paciente> buscarTodosPacientes () throws PacienteDataBaseException {
+    public List<Paciente> buscarTodosPacientes (EntityManager em) throws PacienteDataBaseException {
         em.getTransaction().begin();
         List<Paciente> pacienteList = dao.buscarTodosPacientes(em);
-        em.close();
+        em.getTransaction().commit();
 
         return pacienteList;
     }
 
-    public void deletar(String cpf) throws PacienteDataBaseException {
+    public void deletar(String cpf, EntityManager em) throws PacienteDataBaseException {
         em.getTransaction().begin();
         dao.deletar(cpf, em);
         em.getTransaction().commit();
-        em.close();
     }
 
-    public Paciente buscarPorCpf(String cpf) throws PacienteDataBaseException {
+    public Paciente buscarPorCpf(String cpf, EntityManager em) throws PacienteDataBaseException {
+        em.getTransaction().begin();
         Optional<Paciente> paciente = dao.buscarPorCpf(cpf, em);
+        em.getTransaction().commit();
 
         if(paciente.isEmpty())
             throw new RuntimeException("Paciente não encontrado");

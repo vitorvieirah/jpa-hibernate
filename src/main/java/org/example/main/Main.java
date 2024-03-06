@@ -30,56 +30,52 @@ public class Main {
         MedicoDao medicoDao = new MedicoDao(medicoMapper);
         PacienteDao pacienteDao = new PacienteDao(pacienteMapper);
 
-        ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao, em);
-        MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper, em);
-        PacienteSerivce pacienteSerivce = new PacienteSerivce(pacienteDao, pacienteMapper, em);
+        ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao);
+        MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper);
+        PacienteSerivce pacienteSerivce = new PacienteSerivce(pacienteDao, pacienteMapper);
 
-        Menus menus = new Menus(pacienteSerivce, medicoSerivce, consultaSerivce);
+        Menus menus = new Menus(pacienteSerivce, medicoSerivce, consultaSerivce, em);
 
         int op = 0;
         while (op < 4) {
             op = menus.menuPrincipal();
             switch (op) {
                 case 1: {
-                    switch (menus.menuPaciente()) {
-                        case 1:
-                            menus.menuCadastroPaciente();
-                        case 2:
-                            menus.menuConsultaTodosOsPacientes();
-                        case 3:
-                            menus.menuConsultaPacientePorCpf();
-                        case 4:
-                            menus.menuAlteraDadosPaciente();
-                        case 5:
-                            menus.menuDeletarPaciente();
+                    op = menus.menuPaciente();
+                    switch (op) {
+                        case 1: menus.menuCadastroPaciente(); break;
+                        case 2: menus.menuConsultaTodosOsPacientes(); break;
+                        case 3: menus.menuConsultaPacientePorCpf(); break;
+                        case 4: menus.menuAlteraDadosPaciente(); break;
+                        case 5: menus.menuDeletarPaciente();
                     }
-                }
+                } break;
                 case 2: {
                     switch (menus.menuMedicos()) {
                         case 1:
-                            menus.menuCadastroMedicos();
+                            menus.menuCadastroMedicos(); break;
                         case 2:
-                            menus.menuConsultarTodosOsMedicos();
+                            menus.menuConsultarTodosOsMedicos(); break;
                         case 3:
-                            menus.menuConsultarMedicoPorCrm();
+                            menus.menuConsultarMedicoPorCrm(); break;
                         case 4:
-                            menus.menuAlterarDadosMedico();
+                            menus.menuAlterarDadosMedico(); break;
                         case 5:
                             menus.menuDeletarMedicos();
                     }
-                }
-                default: {
+                } break;
+                case 3: {
                     switch (menus.menuConsultas()) {
                         case 1:
-                            menus.menuCadastroConsulta();
+                            menus.menuCadastroConsulta(); break;
                         case 2:
-                            menus.menuAcessarConsultaPorId();
+                            menus.menuAcessarConsultaPorId(); break;
                         case 3:
-                            menus.menuAcessarTodasAsConsultas();
+                            menus.menuAcessarTodasAsConsultas(); break;
                         case 4:
-                            menus.menuCancelarConsulta();
+                            menus.menuCancelarConsulta(); break;
                         case 5:
-                            menus.menuRemarcarConsulta();
+                            menus.menuRemarcarConsulta(); break;
                     }
                 }
             }

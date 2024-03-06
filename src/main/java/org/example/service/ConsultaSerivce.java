@@ -25,9 +25,8 @@ public class ConsultaSerivce {
     private final PacienteDao pacienteDao;
     private final MedicoDao medicoDao;
     private final ConsultaDao consultaDao;
-    private final EntityManager em;
 
-    public String marcar(String crm, String cpfPaciente) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseException {
+    public String marcar(String crm, String cpfPaciente, EntityManager em) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseException {
         em.getTransaction().begin();
         List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(crm, em);
 
@@ -49,16 +48,15 @@ public class ConsultaSerivce {
             throw new RuntimeException("Data indisponível");
 
         em.getTransaction().commit();
-        em.close();
 
         return "Consulta do " + paciente.get().getNome() + " marcada com o médico " + medico.get().getNome() +
                 " na data " + formataData(dataConsulta);
     }
 
-    public Consulta buscarConsultaPorId(Long id) throws ConsultaDataBaseException {
+    public Consulta buscarConsultaPorId(Long id, EntityManager em) throws ConsultaDataBaseException {
         em.getTransaction().begin();
         Optional<Consulta> consulta = consultaDao.buscarPorId(id, em);
-        em.close();
+        em.getTransaction().commit();
 
         if(consulta.isEmpty())
             throw new RuntimeException("Consulta não encotrada");
@@ -66,7 +64,7 @@ public class ConsultaSerivce {
             return consulta.get();
     }
 
-    public void cancelar(Long idConsulta) throws ConsultaDataBaseException {
+    public void cancelar(Long idConsulta, EntityManager em) throws ConsultaDataBaseException {
         em.getTransaction().begin();
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         if(consultaOptional.isPresent())
@@ -74,10 +72,9 @@ public class ConsultaSerivce {
         else
             throw new RuntimeException("Consulta não encontrada");
         em.getTransaction().commit();
-        em.close();
     }
 
-    public String remarcar(Long idConsulta, LocalDate novaData) throws ConsultaDataBaseException {
+    public String remarcar(Long idConsulta, LocalDate novaData, EntityManager em) throws ConsultaDataBaseException {
         em.getTransaction().begin();
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         Consulta consulta;
@@ -94,7 +91,6 @@ public class ConsultaSerivce {
             consulta.remarcar(novaData);
             consultaDao.salvar(consulta, em);
             em.getTransaction().commit();
-            em.close();
             return "Consulta do paciente : "
                     + consulta.getPaciente().getNome()
                     + " com o médico : "
@@ -103,17 +99,17 @@ public class ConsultaSerivce {
                     + formataData(novaData);
 
         }else {
-            em.close();
+            em.getTransaction().commit();
             throw new RuntimeException("Data indisponível");
         }
 
 
     }
 
-    public List<Consulta> buscarTodasConsultas () throws ConsultaDataBaseException {
+    public List<Consulta> buscarTodasConsultas (EntityManager em) throws ConsultaDataBaseException {
         em.getTransaction().begin();
         List<Consulta> consultas = consultaDao.buscarPorConsultas(em);
-        em.close();
+        em.getTransaction().commit();
         return consultas;
     }
 

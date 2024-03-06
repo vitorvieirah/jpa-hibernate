@@ -2,6 +2,7 @@ package org.example.main;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.example.domain.Paciente;
 import org.example.exception.ConsultaDataBaseException;
 import org.example.exception.MedicoDataBaseException;
 import org.example.exception.PacienteDataBaseException;
@@ -11,6 +12,7 @@ import org.example.service.ConsultaSerivce;
 import org.example.service.MedicoSerivce;
 import org.example.service.PacienteSerivce;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -21,6 +23,7 @@ public class Menus {
     @NonNull private final PacienteSerivce servicePaciente;
     @NonNull private final MedicoSerivce serviceMedico;
     @NonNull private final ConsultaSerivce serviceConsulta;
+    @NonNull private final EntityManager em;
 
     public int menuPrincipal(){
         System.out.println("""
@@ -59,18 +62,21 @@ public class Menus {
                  .nome(nome)
                  .idade(idade)
                  .email(email)
-                 .build());
+                 .build(), em);
+
+        em.close();
 
          mensagemSucesso();
     }
 
     public void menuConsultaTodosOsPacientes () throws PacienteDataBaseException {
-        servicePaciente.buscarTodosPacientes().forEach(System.out::println);
+        servicePaciente.buscarTodosPacientes(em).forEach(System.out::println);
     }
 
     public void menuConsultaPacientePorCpf () throws PacienteDataBaseException {
         System.out.println("Digiete o cpf do paciente: ");
-        System.out.println("Paciente encotrado: " + servicePaciente.buscarPorCpf(sc.next()));
+        System.out.println("Paciente encotrado: ");
+        printPaciente(servicePaciente.buscarPorCpf(sc.next(), em));
     }
 
     public void menuAlteraDadosPaciente() throws PacienteDataBaseException {
@@ -85,22 +91,22 @@ public class Menus {
         switch (sc.nextInt()){
             case 1:{
                 System.out.println("Digite o novo cpf do paciente: ");
-                servicePaciente.alterar(DadosPaciente.builder().cpf(sc.next()).build());
+                servicePaciente.alterar(DadosPaciente.builder().cpf(sc.next()).build(), em);
                 mensagemSucesso();
             }
             case 2:{
                 System.out.println("Digite o novo nome do paciente: ");
-                servicePaciente.alterar(DadosPaciente.builder().nome(sc.next()).build());
+                servicePaciente.alterar(DadosPaciente.builder().nome(sc.next()).build(), em);
                 mensagemSucesso();
             }
             case 3:{
                 System.out.println("Digite a nova idade do paciente: ");
-                servicePaciente.alterar(DadosPaciente.builder().idade(sc.nextInt()).build());
+                servicePaciente.alterar(DadosPaciente.builder().idade(sc.nextInt()).build(), em);
                 mensagemSucesso();
             }
             case 4:{
                 System.out.println("Digite o novo email do paciente: ");
-                servicePaciente.alterar(DadosPaciente.builder().email(sc.next()).build());
+                servicePaciente.alterar(DadosPaciente.builder().email(sc.next()).build(), em);
                 mensagemSucesso();
             }
             default:{
@@ -113,7 +119,7 @@ public class Menus {
                 System.out.println("Digite o novo email do paciente: ");
                 String email = sc.next();
 
-                servicePaciente.alterar(DadosPaciente.builder().cpf(cpf).nome(nome).email(email).idade(idade).build());
+                servicePaciente.alterar(DadosPaciente.builder().cpf(cpf).nome(nome).email(email).idade(idade).build(), em);
 
                 mensagemSucesso();
             }
@@ -122,7 +128,7 @@ public class Menus {
 
     public void menuDeletarPaciente() throws PacienteDataBaseException {
         System.out.println("Digite o cpf do paciente que deseja deletar: ");
-        servicePaciente.deletar(sc.next());
+        servicePaciente.deletar(sc.next(), em);
         mensagemSucesso();
     }
 
@@ -143,18 +149,18 @@ public class Menus {
         System.out.println("Digite a especialidade do médico: ");
         String especialidade = sc.next();
 
-        serviceMedico.cadastrar(DadosMedico.builder().nome(nome).especialidade(especialidade).build());
+        serviceMedico.cadastrar(DadosMedico.builder().nome(nome).especialidade(especialidade).build(), em);
 
         mensagemSucesso();
     }
 
     public void menuConsultarTodosOsMedicos () throws MedicoDataBaseException {
-        serviceMedico.consultarTodos().forEach(System.out::println);
+        serviceMedico.consultarTodos(em).forEach(System.out::println);
     }
 
     public void menuConsultarMedicoPorCrm () throws MedicoDataBaseException {
         System.out.println("Digite o crm do médico: ");
-        System.out.println("Médico encontrado: " + serviceMedico.consultarPorCrm(sc.next()));
+        System.out.println("Médico encontrado: " + serviceMedico.consultarPorCrm(sc.next(), em));
     }
 
     public void menuAlterarDadosMedico () throws MedicoDataBaseException {
@@ -167,12 +173,12 @@ public class Menus {
         switch (sc.nextInt()){
             case 1:{
                 System.out.println("Digite o novo nome do médico: ");
-                serviceMedico.alterar(DadosMedico.builder().nome(sc.next()).build());
+                serviceMedico.alterar(DadosMedico.builder().nome(sc.next()).build(), em);
                 mensagemSucesso();
             }
             case 2:{
                 System.out.println("Digite a nova especialidade do médico: ");
-                serviceMedico.alterar(DadosMedico.builder().especialidade(sc.next()).build()) ;
+                serviceMedico.alterar(DadosMedico.builder().especialidade(sc.next()).build(), em) ;
                 mensagemSucesso();
             }
             default:{
@@ -181,7 +187,7 @@ public class Menus {
                 System.out.println("Digite a nova especialidade: ");
                 String especialidade = sc.next();
 
-                serviceMedico.alterar(DadosMedico.builder().nome(nome).especialidade(especialidade).build());
+                serviceMedico.alterar(DadosMedico.builder().nome(nome).especialidade(especialidade).build(), em);
                 mensagemSucesso();
             }
         }
@@ -189,7 +195,7 @@ public class Menus {
 
     public void menuDeletarMedicos () throws MedicoDataBaseException {
         System.out.println("Digite o crm do médico que deseja deletar: ");
-        serviceMedico.deletar(sc.next());
+        serviceMedico.deletar(sc.next(), em);
         mensagemSucesso();
     }
 
@@ -210,21 +216,21 @@ public class Menus {
         System.out.println("Digite o cpf do paciente: ");
         String cpf = sc.next();
 
-        System.out.println(serviceConsulta.marcar(crm, cpf));
+        System.out.println(serviceConsulta.marcar(crm, cpf, em));
     }
 
     public void menuAcessarConsultaPorId () throws ConsultaDataBaseException {
         System.out.println("Digite o id da consulta: ");
-        System.out.println("Consulta encontrada: " + serviceConsulta.buscarConsultaPorId(sc.nextLong()));
+        System.out.println("Consulta encontrada: " + serviceConsulta.buscarConsultaPorId(sc.nextLong(), em));
     }
 
     public void menuAcessarTodasAsConsultas () throws ConsultaDataBaseException {
-        serviceConsulta.buscarTodasConsultas().forEach(System.out::println);
+        serviceConsulta.buscarTodasConsultas(em).forEach(System.out::println);
     }
 
     public void menuCancelarConsulta() throws ConsultaDataBaseException {
         System.out.println("Digite o id da consulta que deseja cancelar: ");
-        serviceConsulta.cancelar(sc.nextLong());
+        serviceConsulta.cancelar(sc.nextLong(), em);
         mensagemSucesso();
     }
 
@@ -234,10 +240,17 @@ public class Menus {
         System.out.println("Digite o nova data da consulta: ");
         LocalDate data = LocalDate.parse(sc.next());
 
-        System.out.println(serviceConsulta.remarcar(id, data));
+        System.out.println(serviceConsulta.remarcar(id, data, em));
     }
 
     private static void mensagemSucesso (){
         System.out.println("Operação realizada com sucesso");
+    }
+
+    private static void printPaciente(Paciente paciente){
+        System.out.println("Nome: " + paciente.getNome()
+                + "Idade: " + paciente.getIdade()
+                + "Cpf: " + paciente.getCpf()
+                + "Email: " + paciente.getEmail());
     }
 }
