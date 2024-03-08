@@ -27,7 +27,6 @@ public class ConsultaSerivce {
     private final ConsultaDao consultaDao;
 
     public String marcar(String crm, String cpfPaciente, EntityManager em) throws MedicoDataBaseException, PacienteDataBaseException, ConsultaDataBaseException {
-        em.getTransaction().begin();
         List<Consulta> consultas =  consultaDao.buscarConsultasPorMedico(crm, em);
 
         LocalDate dataConsulta = buscarDataMaisRecente(consultas);
@@ -54,7 +53,6 @@ public class ConsultaSerivce {
     }
 
     public Consulta buscarConsultaPorId(Long id, EntityManager em) throws ConsultaDataBaseException {
-        em.getTransaction().begin();
         Optional<Consulta> consulta = consultaDao.buscarPorId(id, em);
         em.getTransaction().commit();
 
@@ -65,7 +63,6 @@ public class ConsultaSerivce {
     }
 
     public void cancelar(Long idConsulta, EntityManager em) throws ConsultaDataBaseException {
-        em.getTransaction().begin();
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         if(consultaOptional.isPresent())
             consultaDao.deletar(consultaOptional.get(), em);
@@ -75,7 +72,6 @@ public class ConsultaSerivce {
     }
 
     public String remarcar(Long idConsulta, LocalDate novaData, EntityManager em) throws ConsultaDataBaseException {
-        em.getTransaction().begin();
         Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
         Consulta consulta;
 
@@ -107,7 +103,6 @@ public class ConsultaSerivce {
     }
 
     public List<Consulta> buscarTodasConsultas (EntityManager em) throws ConsultaDataBaseException {
-        em.getTransaction().begin();
         List<Consulta> consultas = consultaDao.buscarPorConsultas(em);
         em.getTransaction().commit();
         return consultas;

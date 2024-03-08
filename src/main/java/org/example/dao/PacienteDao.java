@@ -37,6 +37,7 @@ public class PacienteDao {
 
 
     public void salvar(Paciente paciente, EntityManager em) throws PacienteDataBaseException {
+
         try{
             em.persist(mapper.paraEntity(paciente));
         }catch (Exception ex){
@@ -67,5 +68,29 @@ public class PacienteDao {
         }
 
         return pacientes;
+    }
+
+    public void alterar(Paciente paciente, EntityManager em) throws PacienteDataBaseException {
+        try{
+            em.merge(mapper.paraEntity(paciente));
+        }catch (Exception ex){
+            ManegerLog.printLogError("Erro ao alterar paciente", ex);
+            throw new PacienteDataBaseException(ex.getMessage());
+        }
+    }
+
+    public void alterarCpf (String cpfCliente, String newCpf, EntityManager em) throws PacienteDataBaseException {
+        String jpql = "UPDATE Paciente pc SET pc.cpf = :nCpf WHERE pc.cpf = :cpfCliente";
+
+        try{
+            em.createQuery(jpql, PacienteEntity.class)
+                    .setParameter("nCpf", newCpf)
+                    .setParameter("cpfCliente", cpfCliente)
+                    .executeUpdate();
+        }catch (Exception ex){
+            ManegerLog.printLogError("Erro ao alterar cpf do cliente", ex);
+            throw new PacienteDataBaseException(ex.getMessage());
+        }
+
     }
 }

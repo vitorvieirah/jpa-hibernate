@@ -20,7 +20,6 @@ public class MedicoSerivce {
 
 
     public void cadastrar(DadosMedico medico, EntityManager em) throws MedicoDataBaseException {
-        em.getTransaction().begin();
         Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm(), em);
 
         oMedico.ifPresent(p -> {
@@ -32,14 +31,12 @@ public class MedicoSerivce {
     }
 
     public List<Medico> consultarTodos(EntityManager em) throws MedicoDataBaseException {
-        em.getTransaction().begin();
         List<Medico> medicos =  dao.consultarTodos(em);
         em.getTransaction().commit();
         return medicos;
     }
 
     public Medico consultarPorCrm(String crm, EntityManager em) throws MedicoDataBaseException {
-        em.getTransaction().begin();
         Optional<Medico> medico = dao.consultarPorCrm(crm, em);
         em.getTransaction().commit();
 
@@ -50,8 +47,6 @@ public class MedicoSerivce {
     }
 
     public void alterar(DadosMedico medico, EntityManager em) throws MedicoDataBaseException {
-
-        em.getTransaction().begin();
         Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm(), em);
 
         if (oMedico.isPresent()){
@@ -64,7 +59,6 @@ public class MedicoSerivce {
     }
 
     public void deletar(String crm, EntityManager em) throws MedicoDataBaseException {
-        em.getTransaction().begin();
         dao.deletar(crm, em);
         em.getTransaction().commit();
     }
