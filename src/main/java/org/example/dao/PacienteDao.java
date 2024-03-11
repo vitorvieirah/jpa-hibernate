@@ -8,6 +8,7 @@ import org.example.exception.PacienteDataBaseException;
 import org.example.mapper.PacienteMapper;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
@@ -47,14 +48,11 @@ public class PacienteDao {
     }
 
     public void deletar(String cpf, EntityManager em) throws PacienteDataBaseException {
-        Optional<Paciente> paciente = buscarPorCpf(cpf, em);
         try {
-           if(paciente.isPresent()) {
-               PacienteEntity pacienteEntity = mapper.paraEntity(paciente.get());
-               em.merge(pacienteEntity);
-               em.remove(pacienteEntity);
-           }else
-               throw new RuntimeException("Paciente não encontrado");
+            PacienteEntity pacienteEntity = em.getReference(PacienteEntity.class, cpf);
+            em.remove(pacienteEntity);
+        }catch(EntityNotFoundException ex){
+            ManegerLog.printLogError("Paciente não encontrado", ex);
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao deletar paciente", ex);
             throw new PacienteDataBaseException(ex.getMessage());

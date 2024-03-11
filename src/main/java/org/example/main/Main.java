@@ -33,7 +33,7 @@ public class Main {
         while (op < 4) {
             op = Menus.menuPrincipal();
             switch (op) {
-                case 1: {
+                case 1 -> {
 
                     EntityManager em = JPAUtil.getEntityManeger();
                     PacienteDao pacienteDao = new PacienteDao(pacienteMapper);
@@ -42,58 +42,68 @@ public class Main {
 
                     EntityTransaction transaction = em.getTransaction();
 
-                    if(!transaction.isActive())
+                    if (!transaction.isActive())
                         transaction.begin();
 
                     switch (menus.menuPaciente()) {
-                        case 1: {
+                        case 1 -> {
                             menus.menuCadastroPaciente();
                             transaction.commit();
-                        } break;
-                        case 2:{
+                        }
+                        case 2 -> {
                             menus.menuConsultaTodosOsPacientes();
                             transaction.commit();
-                        } break;
-                        case 3:{
+                        }
+                        case 3 -> {
                             menus.menuConsultaPacientePorCpf();
                             transaction.commit();
-                        } break;
-                        case 4:{
+                        }
+                        case 4 -> {
                             menus.menuAlteraDadosPaciente();
                             transaction.commit();
-                        } break;
-                        case 5:{
+                        }
+                        case 5 -> {
                             menus.menuDeletarPaciente();
                             transaction.commit();
                         }
                     }
                     em.close();
-                } break;
-                case 2: {
+                }
+                case 2 -> {
                     EntityManager em = JPAUtil.getEntityManeger();
                     MedicoDao medicoDao = new MedicoDao(medicoMapper);
                     MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper);
                     MenuMedico menus = new MenuMedico(medicoSerivce, em);
                     EntityTransaction transaction = em.getTransaction();
 
-                    if(!transaction.isActive())
+                    if (!transaction.isActive())
                         transaction.begin();
 
                     switch (menus.menuMedicos()) {
-                        case 1:
-                            menus.menuCadastroMedicos(); break;
-                        case 2:
-                            menus.menuConsultarTodosOsMedicos(); break;
-                        case 3:
-                            menus.menuConsultarMedicoPorCrm(); break;
-                        case 4:
-                            menus.menuAlterarDadosMedico(); break;
-                        case 5:
+                        case 1 -> {
+                            menus.menuCadastroMedicos();
+                            transaction.commit();
+                        }
+                        case 2 -> {
+                            menus.menuConsultarTodosOsMedicos();
+                            transaction.commit();
+                        }
+                        case 3 -> {
+                            menus.menuConsultarMedicoPorCrm();
+                            transaction.commit();
+                        }
+                        case 4 -> {
+                            menus.menuAlterarDadosMedico();
+                            transaction.commit();
+                        }
+                        case 5 -> {
                             menus.menuDeletarMedicos();
+                            transaction.commit();
+                        }
                     }
                     em.close();
-                } break;
-                case 3: {
+                }
+                case 3 -> {
                     EntityManager em = JPAUtil.getEntityManeger();
                     ConsultaDao consultaDao = new ConsultaDao(consultaMapper);
                     PacienteDao pacienteDao = new PacienteDao(pacienteMapper);
@@ -102,20 +112,30 @@ public class Main {
                     MenuConsulta menus = new MenuConsulta(consultaSerivce, em);
                     EntityTransaction transaction = em.getTransaction();
 
-                    if(!transaction.isActive())
+                    if (!transaction.isActive())
                         transaction.begin();
 
                     switch (menus.menuConsultas()) {
-                        case 1:
-                            menus.menuCadastroConsulta(); break;
-                        case 2:
-                            menus.menuAcessarConsultaPorId(); break;
-                        case 3:
-                            menus.menuAcessarTodasAsConsultas(); break;
-                        case 4:
-                            menus.menuCancelarConsulta(); break;
-                        case 5:
-                            menus.menuRemarcarConsulta(); break;
+                        case 1 -> {
+                            menus.menuCadastroConsulta();
+                            transaction.commit();
+                        }
+                        case 2 -> {
+                            menus.menuAcessarConsultaPorId();
+                            transaction.commit();
+                        }
+                        case 3 -> {
+                            menus.menuAcessarTodasAsConsultas();
+                            transaction.commit();
+                        }
+                        case 4 -> {
+                            menus.menuCancelarConsulta();
+                            transaction.commit();
+                        }
+                        case 5 -> {
+                            menus.menuRemarcarConsulta();
+                            transaction.commit();
+                        }
                     }
                     em.close();
                 }
