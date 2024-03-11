@@ -8,6 +8,7 @@ import org.example.exception.ConsultaDataBaseException;
 import org.example.mapper.ConsultaMapper;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,9 +41,12 @@ public class ConsultaDao {
         }
     }
 
-    public void deletar (Consulta consulta, EntityManager em) throws ConsultaDataBaseException {
-        try{
-            em.remove(mapper.paraEntity(consulta));
+    public void deletar (Long id, EntityManager em) throws ConsultaDataBaseException {
+        try {
+            ConsultaEntity consultaEntity = em.getReference(ConsultaEntity.class, id);
+            em.remove(consultaEntity);
+        }catch (EntityNotFoundException ex){
+            ManegerLog.printLogError("Consulta não encontrado", ex);
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao deletar consulta", ex);
             throw new ConsultaDataBaseException(ex.getMessage());
@@ -72,5 +76,14 @@ public class ConsultaDao {
         }
 
         return consultas;
+    }
+
+    public void alterar(Consulta consulta, EntityManager em) throws ConsultaDataBaseException {
+        try{
+            em.merge(mapper.paraEntity(consulta));
+        }catch (Exception ex){
+            ManegerLog.printLogError("Erro ao alterar consulta", ex);
+            throw new ConsultaDataBaseException(ex.getMessage());
+        }
     }
 }

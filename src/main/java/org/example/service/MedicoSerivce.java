@@ -27,18 +27,15 @@ public class MedicoSerivce {
         });
 
         dao.salvar(mapper.paraDomainDeDados(medico), em);
-        em.getTransaction().commit();
     }
 
     public List<Medico> consultarTodos(EntityManager em) throws MedicoDataBaseException {
         List<Medico> medicos =  dao.consultarTodos(em);
-        em.getTransaction().commit();
         return medicos;
     }
 
     public Medico consultarPorCrm(String crm, EntityManager em) throws MedicoDataBaseException {
         Optional<Medico> medico = dao.consultarPorCrm(crm, em);
-        em.getTransaction().commit();
 
         if(medico.isEmpty())
             throw new RuntimeException("Medico não encontrado");
@@ -51,15 +48,12 @@ public class MedicoSerivce {
 
         if (oMedico.isPresent()){
             oMedico.get().alterarDados(medico);
-            dao.salvar(oMedico.get(), em);
+            dao.alterar(oMedico.get(), em);
         }else
             throw new RuntimeException("Medico nao encontrado");
-
-        em.getTransaction().commit();
     }
 
     public void deletar(String crm, EntityManager em) throws MedicoDataBaseException {
         dao.deletar(crm, em);
-        em.getTransaction().commit();
     }
 }

@@ -17,6 +17,7 @@ public class PacienteSerivce {
     private final PacienteDao dao;
     private final PacienteMapper mapper;
 
+
     public void cadastrar(DadosPaciente paciente, EntityManager em) throws PacienteDataBaseException {
         Optional<Paciente> oPaciente = dao.buscarPorCpf(paciente.cpf(), em);
         oPaciente.ifPresent(p -> {

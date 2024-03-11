@@ -46,15 +46,12 @@ public class ConsultaSerivce {
         }else
             throw new RuntimeException("Data indisponível");
 
-        em.getTransaction().commit();
-
         return "Consulta do " + paciente.get().getNome() + " marcada com o médico " + medico.get().getNome() +
                 " na data " + formataData(dataConsulta);
     }
 
     public Consulta buscarConsultaPorId(Long id, EntityManager em) throws ConsultaDataBaseException {
         Optional<Consulta> consulta = consultaDao.buscarPorId(id, em);
-        em.getTransaction().commit();
 
         if(consulta.isEmpty())
             throw new RuntimeException("Consulta não encotrada");
@@ -63,12 +60,7 @@ public class ConsultaSerivce {
     }
 
     public void cancelar(Long idConsulta, EntityManager em) throws ConsultaDataBaseException {
-        Optional<Consulta> consultaOptional = consultaDao.buscarPorId(idConsulta, em);
-        if(consultaOptional.isPresent())
-            consultaDao.deletar(consultaOptional.get(), em);
-        else
-            throw new RuntimeException("Consulta não encontrada");
-        em.getTransaction().commit();
+        consultaDao.deletar(idConsulta, em);
     }
 
     public String remarcar(Long idConsulta, LocalDate novaData, EntityManager em) throws ConsultaDataBaseException {
@@ -85,8 +77,7 @@ public class ConsultaSerivce {
 
         if((dataDisponivel == novaData || novaData.isBefore(dataDisponivel)) && validaData(novaData)){
             consulta.remarcar(novaData);
-            consultaDao.salvar(consulta, em);
-            em.getTransaction().commit();
+            consultaDao.alterar(consulta, em);
             return "Consulta do paciente : "
                     + consulta.getPaciente().getNome()
                     + " com o médico : "
@@ -95,7 +86,6 @@ public class ConsultaSerivce {
                     + formataData(novaData);
 
         }else {
-            em.getTransaction().commit();
             throw new RuntimeException("Data indisponível");
         }
 
@@ -104,7 +94,6 @@ public class ConsultaSerivce {
 
     public List<Consulta> buscarTodasConsultas (EntityManager em) throws ConsultaDataBaseException {
         List<Consulta> consultas = consultaDao.buscarPorConsultas(em);
-        em.getTransaction().commit();
         return consultas;
     }
 

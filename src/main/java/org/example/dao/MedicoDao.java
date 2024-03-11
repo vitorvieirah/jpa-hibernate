@@ -9,6 +9,7 @@ import org.example.mapper.MedicoMapper;
 
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,9 +53,21 @@ public class MedicoDao {
         }
     }
 
-    public void deletar(String crm, EntityManager em) throws MedicoDataBaseException {
+    public void alterar (Medico medico, EntityManager em) throws MedicoDataBaseException{
         try{
-            em.remove(consultarPorCrm(crm, em));
+            em.merge(mapper.paraEntity(medico));
+        }catch (Exception ex){
+            ManegerLog.printLogError("Erro ao allterar médico", ex);
+            throw new MedicoDataBaseException(ex.getMessage());
+        }
+    }
+
+    public void deletar(String crm, EntityManager em) throws MedicoDataBaseException {
+        try {
+            MedicoEntity medicoEntity = em.getReference(MedicoEntity.class, crm);
+            em.remove(medicoEntity);
+        }catch (EntityNotFoundException ex){
+            ManegerLog.printLogError("Médico não encontrado", ex);
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao deletar médico", ex);
             throw new MedicoDataBaseException(ex.getMessage());
