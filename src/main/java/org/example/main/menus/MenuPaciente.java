@@ -62,37 +62,29 @@ public class MenuPaciente {
         String cpfCliente = sc.next();
         printPaciente(servicePaciente.buscarPorCpf(cpfCliente, em));
         System.out.println("""
-                1 - ALTERAR APENAS CPF PACIENTE
-                2 - ALTERAR APENAS O NOME DO PACIENTE
-                3 - ALTERAR APENAS A IDADE DO PACIENTE
-                4 - ALTERAR APENAS O EMAIL DO PACIENTE
-                5 - ALTERAR TODAS AS INFORMAÇÕES
+                1 - ALTERAR APENAS O NOME DO PACIENTE
+                2 - ALTERAR APENAS A IDADE DO PACIENTE
+                3 - ALTERAR APENAS O EMAIL DO PACIENTE
+                4 - ALTERAR TODAS AS INFORMAÇÕES
                 """);
 
         switch (sc.nextInt()){
             case 1:{
-                System.out.println("Digite o novo cpf do paciente: ");
-                servicePaciente.alterar(cpfCliente, DadosPaciente.builder().cpf(sc.next()).build(), em);
-                mensagemSucesso();
-            } break;
-            case 2:{
                 System.out.println("Digite o novo nome do paciente: ");
                 servicePaciente.alterar(cpfCliente, DadosPaciente.builder().nome(sc.next()).build(), em);
                 mensagemSucesso();
             } break;
-            case 3:{
+            case 2:{
                 System.out.println("Digite a nova idade do paciente: ");
                 servicePaciente.alterar(cpfCliente, DadosPaciente.builder().idade(sc.nextInt()).build(), em);
                 mensagemSucesso();
             } break;
-            case 4:{
+            case 3:{
                 System.out.println("Digite o novo email do paciente: ");
                 servicePaciente.alterar(cpfCliente, DadosPaciente.builder().email(sc.next()).build(), em);
                 mensagemSucesso();
             }break;
             default:{
-                System.out.println("Digite o novo cpf do paciente: ");
-                String cpf = sc.next();
                 System.out.println("Digite o novo nome do paciente: ");
                 String nome = sc.next();
                 System.out.println("Digite a nova idade do paciente: ");
@@ -100,7 +92,7 @@ public class MenuPaciente {
                 System.out.println("Digite o novo email do paciente: ");
                 String email = sc.next();
 
-                servicePaciente.alterar(cpf, DadosPaciente.builder().cpf(cpf).nome(nome).email(email).idade(idade).build(), em);
+                servicePaciente.alterar(cpfCliente, DadosPaciente.builder().nome(nome).email(email).idade(idade).build(), em);
 
                 mensagemSucesso();
             }

@@ -31,7 +31,7 @@ public class PacienteSerivce {
 
         if(oPaciente.isPresent()){
             oPaciente.get().alterarDados(paciente);
-            dao.salvar(oPaciente.get(), em);
+            dao.alterar(oPaciente.get(), em);
         }
         else
             throw new RuntimeException("Paciente não encontrado");

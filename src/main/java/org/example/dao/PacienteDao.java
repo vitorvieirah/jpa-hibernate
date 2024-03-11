@@ -49,7 +49,12 @@ public class PacienteDao {
     public void deletar(String cpf, EntityManager em) throws PacienteDataBaseException {
         Optional<Paciente> paciente = buscarPorCpf(cpf, em);
         try {
-            paciente.ifPresent(p -> em.remove(mapper.paraEntity(paciente.get())));
+           if(paciente.isPresent()) {
+               PacienteEntity pacienteEntity = mapper.paraEntity(paciente.get());
+               em.merge(pacienteEntity);
+               em.remove(pacienteEntity);
+           }else
+               throw new RuntimeException("Paciente não encontrado");
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao deletar paciente", ex);
             throw new PacienteDataBaseException(ex.getMessage());
@@ -77,20 +82,5 @@ public class PacienteDao {
             ManegerLog.printLogError("Erro ao alterar paciente", ex);
             throw new PacienteDataBaseException(ex.getMessage());
         }
-    }
-
-    public void alterarCpf (String cpfCliente, String newCpf, EntityManager em) throws PacienteDataBaseException {
-        String jpql = "UPDATE Paciente pc SET pc.cpf = :nCpf WHERE pc.cpf = :cpfCliente";
-
-        try{
-            em.createQuery(jpql, PacienteEntity.class)
-                    .setParameter("nCpf", newCpf)
-                    .setParameter("cpfCliente", cpfCliente)
-                    .executeUpdate();
-        }catch (Exception ex){
-            ManegerLog.printLogError("Erro ao alterar cpf do cliente", ex);
-            throw new PacienteDataBaseException(ex.getMessage());
-        }
-
     }
 }
