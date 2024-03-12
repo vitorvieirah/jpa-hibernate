@@ -10,6 +10,7 @@ import org.example.mapper.MedicoMapper;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +20,23 @@ public class MedicoDao {
     private final MedicoMapper mapper;
 
     public Optional<Medico> consultarPorCrm(String crm, EntityManager em) throws MedicoDataBaseException {
-        Optional<MedicoEntity> oMedico;
+        String jpql = "SELECT m FROM Medico m WHERE m.crm = :crm";
         try {
-            oMedico = Optional.of(em.find(MedicoEntity.class, crm));
+            MedicoEntity medicoEntity = em.createQuery(jpql, MedicoEntity.class)
+                    .setParameter("crm", crm)
+                    .getSingleResult();
+            return Optional.ofNullable(mapper.paraDomain(medicoEntity));
+        }catch (NoResultException ex){
+            System.out.println("Nenhum médico encontrado para o crm: " + crm);
+            return Optional.empty();
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao consultar médico por crm", ex);
             throw new MedicoDataBaseException(ex.getMessage());
         }
-
-        return oMedico.map(mapper::paraDomain);
     }
 
     public List<Medico> consultarTodos(EntityManager em) throws MedicoDataBaseException {
-        String jpql = " SELECT m FROOM Medico m";
+        String jpql = " SELECT m FROM Medico m";
         List<MedicoEntity> resultMedicos;
 
         try {

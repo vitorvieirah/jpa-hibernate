@@ -29,12 +29,14 @@ public class MenuMedico {
     }
 
     public void menuCadastroMedicos() throws MedicoDataBaseException {
-        System.out.println("Digite o nome do médico: ");
-        String nome = sc.next();
         System.out.println("Digite a especialidade do médico: ");
         String especialidade = sc.next();
+        System.out.println("Digite o nome do médico: ");
+        String nome = sc.next();
+        System.out.println("Digite seu crm: ");
+        String crm = sc.next();
 
-        serviceMedico.cadastrar(DadosMedico.builder().nome(nome).especialidade(especialidade).build(), em);
+        serviceMedico.cadastrar(DadosMedico.builder().nome(nome).especialidade(especialidade).crm(crm).build(), em);
 
         mensagemSucesso();
     }

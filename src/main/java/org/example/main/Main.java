@@ -74,6 +74,7 @@ public class Main {
                     MedicoDao medicoDao = new MedicoDao(medicoMapper);
                     MedicoSerivce medicoSerivce = new MedicoSerivce(medicoDao, medicoMapper);
                     MenuMedico menus = new MenuMedico(medicoSerivce, em);
+
                     EntityTransaction transaction = em.getTransaction();
 
                     if (!transaction.isActive())
@@ -110,6 +111,7 @@ public class Main {
                     MedicoDao medicoDao = new MedicoDao(medicoMapper);
                     ConsultaSerivce consultaSerivce = new ConsultaSerivce(pacienteDao, medicoDao, consultaDao);
                     MenuConsulta menus = new MenuConsulta(consultaSerivce, em);
+
                     EntityTransaction transaction = em.getTransaction();
 
                     if (!transaction.isActive())
