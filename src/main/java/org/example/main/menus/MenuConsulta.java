@@ -9,6 +9,7 @@ import org.example.service.ConsultaSerivce;
 
 import javax.persistence.EntityManager;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 import static org.example.main.menus.Menus.mensagemSucesso;
@@ -27,12 +28,13 @@ public class MenuConsulta {
                 3 - ACESSAR TODAS AS CONSULTAS
                 4 - CANCELAR CONSULTA
                 5 - REMARCAR CONSULTA
+                6 - SAIR
                 """);
         return sc.nextInt();
     }
 
     public void menuCadastroConsulta () throws PacienteDataBaseException, MedicoDataBaseException, ConsultaDataBaseException {
-        System.out.println("Digite o id do médico: ");
+        System.out.println("Digite o crm do médico: ");
         String crm = sc.next();
         System.out.println("Digite o cpf do paciente: ");
         String cpf = sc.next();
@@ -59,10 +61,11 @@ public class MenuConsulta {
     }
 
     public void menuRemarcarConsulta () throws MedicoDataBaseException, ConsultaDataBaseException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         System.out.println("Digite o id da consulta: ");
         Long id = sc.nextLong();
         System.out.println("Digite o nova data da consulta: ");
-        LocalDate data = LocalDate.parse(sc.next());
+        LocalDate data = LocalDate.parse(sc.next(), formatter);
 
         System.out.println(serviceConsulta.remarcar(id, data, em));
         em.close();

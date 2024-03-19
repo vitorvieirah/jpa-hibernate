@@ -51,7 +51,8 @@ public class MedicoDao {
 
     public void salvar(Medico medico, EntityManager em) throws MedicoDataBaseException {
         try {
-            em.persist(mapper.paraEntity(medico));
+            MedicoEntity medicoEntity = em.merge(mapper.paraEntity(medico));
+            em.persist(medicoEntity);
         }catch (Exception ex){
             ManegerLog.printLogError("Erro ao salvar médico", ex);
             throw new MedicoDataBaseException(ex.getMessage());

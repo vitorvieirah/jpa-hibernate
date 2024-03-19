@@ -25,6 +25,7 @@ public class MenuPaciente {
                 3 - CONSULTAR PACIENTE PELO CPF
                 4 - ALTERAR DADOS DO PACIENTE
                 5 - DELETAR PACIENTE
+                6 - SAIR
                 """);
         return sc.nextInt();
     }
@@ -66,6 +67,7 @@ public class MenuPaciente {
                 2 - ALTERAR APENAS A IDADE DO PACIENTE
                 3 - ALTERAR APENAS O EMAIL DO PACIENTE
                 4 - ALTERAR TODAS AS INFORMAÇÕES
+                5 - SAIR
                 """);
 
         switch (sc.nextInt()){
@@ -84,7 +86,7 @@ public class MenuPaciente {
                 servicePaciente.alterar(cpfCliente, DadosPaciente.builder().email(sc.next()).build(), em);
                 mensagemSucesso();
             }break;
-            default:{
+            case 4:{
                 System.out.println("Digite o novo nome do paciente: ");
                 String nome = sc.next();
                 System.out.println("Digite a nova idade do paciente: ");

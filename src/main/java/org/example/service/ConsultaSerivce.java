@@ -75,7 +75,7 @@ public class ConsultaSerivce {
         List<Consulta> consultas = consultaDao.buscarConsultasPorMedico(consulta.getMedico().getCrm(), em);
         LocalDate dataDisponivel = buscarDataMaisRecente(consultas);
 
-        if((dataDisponivel == novaData || novaData.isBefore(dataDisponivel)) && validaData(novaData)){
+        if((dataDisponivel == novaData || novaData.isAfter(dataDisponivel)) && validaData(novaData)){
             consulta.remarcar(novaData);
             consultaDao.alterar(consulta, em);
             return "Consulta do paciente : "
@@ -103,15 +103,26 @@ public class ConsultaSerivce {
     }
 
     private static LocalDate buscarDataMaisRecente (List<Consulta> consultas){
-        LocalDate dataReferecia = consultas.get(0).getData();
 
-        for (Consulta c : consultas) {
-            if(c.getData().isAfter(dataReferecia)){
-                dataReferecia = c.getData();
+        if(!consultas.isEmpty()){
+            LocalDate dataReferecia = consultas.get(0).getData();
+
+            for (Consulta c : consultas) {
+                if(c.getData().isAfter(dataReferecia)){
+                    dataReferecia = c.getData();
+                }
             }
-        }
 
-        return dataReferecia.plusDays(1);
+            LocalDate dataFinal = dataReferecia.plusDays(1);
+
+            while (!validaData(dataFinal))
+                dataFinal = dataFinal.plusDays(1);
+
+            return dataFinal;
+
+        }else {
+            return LocalDate.now().plusDays(1);
+        }
     }
 
     private static boolean validaData (LocalDate data){

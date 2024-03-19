@@ -17,7 +17,6 @@ import java.util.List;
 public class MedicoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private String crm;
     private String nome;
     private String especialidade;

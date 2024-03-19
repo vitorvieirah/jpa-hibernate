@@ -24,6 +24,7 @@ public class MenuMedico {
                 3 - CONSULTAR MÉDICO POR CRM
                 4 - ALTERAR DADOS DO MÉDICO
                 5 - DELETAR MÉDICO
+                6 - SAIR
                 """);
         return sc.nextInt();
     }
@@ -51,30 +52,34 @@ public class MenuMedico {
     }
 
     public void menuAlterarDadosMedico () throws MedicoDataBaseException {
+        System.out.println("Digite o crm do médico: ");
+        String crm = sc.next();
+
         System.out.println("""
                 1 - ALTERAR APENAS O NOME DO MÉDICO
                 2 - ALTERAR APENAS A ESPECIALIDADE DO MÉDICO
                 3 - ALTERAR TODAS AS INFORMAÇÕES
+                4 - SAIR
                 """);
 
         switch (sc.nextInt()) {
             case 1: {
                 System.out.println("Digite o novo nome do médico: ");
-                serviceMedico.alterar(DadosMedico.builder().nome(sc.next()).build(), em);
+                serviceMedico.alterar(DadosMedico.builder().nome(sc.next()).build(), crm, em);
                 mensagemSucesso();
             } break;
             case 2: {
                 System.out.println("Digite a nova especialidade do médico: ");
-                serviceMedico.alterar(DadosMedico.builder().especialidade(sc.next()).build(), em);
+                serviceMedico.alterar(DadosMedico.builder().especialidade(sc.next()).build(), crm, em);
                 mensagemSucesso();
             } break;
-            default: {
+            case 3: {
                 System.out.println("Digite o novo nome: ");
                 String nome = sc.next();
                 System.out.println("Digite a nova especialidade: ");
                 String especialidade = sc.next();
 
-                serviceMedico.alterar(DadosMedico.builder().nome(nome).especialidade(especialidade).build(), em);
+                serviceMedico.alterar(DadosMedico.builder().nome(nome).especialidade(especialidade).build(), crm, em);
                 mensagemSucesso();
             }
         }

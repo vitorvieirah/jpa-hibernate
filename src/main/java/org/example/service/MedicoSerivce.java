@@ -43,8 +43,8 @@ public class MedicoSerivce {
             return medico.get();
     }
 
-    public void alterar(DadosMedico medico, EntityManager em) throws MedicoDataBaseException {
-        Optional<Medico> oMedico = dao.consultarPorCrm(medico.crm(), em);
+    public void alterar(DadosMedico medico, String crm, EntityManager em) throws MedicoDataBaseException {
+        Optional<Medico> oMedico = dao.consultarPorCrm(crm, em);
 
         if (oMedico.isPresent()){
             oMedico.get().alterarDados(medico);
